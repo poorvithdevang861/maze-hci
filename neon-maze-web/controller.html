@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090814" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>Neon Maze - Phone Controller</title>
+  </head>
+  <body>
+    <div class="ctl">
+      <header class="ctl-header">
+        <div class="ctl-brand">
+          <h1>NEON MAZE</h1>
+          <span>Phone controller</span>
+        </div>
+        <div class="header-right">
+          <div id="conn" class="conn" data-state="idle">
+            <span class="dot"></span>
+            <span id="conn-text">Not connected</span>
+          </div>
+          <button id="done-btn" class="btn ghost small" hidden>Done</button>
+        </div>
+      </header>
+
+      <div class="ctl-stats">
+        <div class="mini"><span class="label">STAGE</span><span id="c-stage" class="mini-value neon">1</span></div>
+        <div class="mini"><span class="label">SCORE</span><span id="c-score" class="mini-value gold">0</span></div>
+        <div class="mini"><span class="label">CLEARED</span><span id="c-cleared" class="mini-value goal">0</span></div>
+      </div>
+
+      <section id="join" class="join" hidden>
+        <h2 id="join-title">Join a game</h2>
+        <p id="join-sub">Enter the room code shown on the laptop.</p>
+        <form id="join-form">
+          <input id="code-input" maxlength="5" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCDE" aria-label="Room code" />
+          <button id="connect-btn" class="btn primary connect-btn" type="submit">Connect</button>
+        </form>
+        <p id="join-error" class="error" role="alert"></p>
+      </section>
+
+      <section id="play" class="play" hidden>
+        <nav class="tabs" role="tablist">
+          <button class="tab active" data-mode="pad" role="tab">Pad</button>
+          <button class="tab" data-mode="swipe" role="tab">Swipe</button>
+          <button class="tab" data-mode="tilt" role="tab">Tilt</button>
+          <button class="tab" data-mode="gesture" role="tab">Gesture</button>
+        </nav>
+
+        <div class="mode active" data-mode="pad">
+          <div class="big-dpad">
+            <button class="bpad up" data-dir="UP" aria-label="Up"><svg viewBox="0 0 24 24"><path d="M12 6l7 9H5z" /></svg></button>
+            <button class="bpad left" data-dir="LEFT" aria-label="Left"><svg viewBox="0 0 24 24"><path d="M6 12l9-7v14z" /></svg></button>
+            <button class="bpad right" data-dir="RIGHT" aria-label="Right"><svg viewBox="0 0 24 24"><path d="M18 12l-9 7V5z" /></svg></button>
+            <button class="bpad down" data-dir="DOWN" aria-label="Down"><svg viewBox="0 0 24 24"><path d="M12 18l-7-9h14z" /></svg></button>
+          </div>
+        </div>
+
+        <div class="mode" data-mode="swipe">
+          <div id="swipe-area" class="swipe-area">
+            <div id="swipe-arrow" class="swipe-arrow"></div>
+            <p>Hold and drag to steer. Lift to stop.</p>
+          </div>
+        </div>
+
+        <div class="mode" data-mode="tilt">
+          <div class="tilt-view">
+            <div class="tilt-ring"></div>
+            <div id="tilt-ball" class="tilt-ball"></div>
+          </div>
+          <div class="mode-actions">
+            <button id="tilt-btn" class="btn primary">Enable tilt</button>
+            <button id="tilt-cal" class="btn ghost" hidden>Recalibrate</button>
+          </div>
+          <p id="tilt-hint" class="hint">Hold the phone upright in portrait, tap Enable, then tilt toward where you want to go.</p>
+        </div>
+
+        <div class="mode" data-mode="gesture">
+          <div class="cam">
+            <video id="g-video" playsinline muted></video>
+            <canvas id="g-canvas"></canvas>
+          </div>
+          <div class="mode-actions">
+            <button id="g-btn" class="btn primary">Start camera</button>
+          </div>
+          <p id="g-status" class="hint">Prop the phone up, then pinch and point in front of the front camera.</p>
+        </div>
+
+        <div class="sending">Sending <strong id="current-dir">STOP</strong></div>
+      </section>
+    </div>
+    <script type="module" src="/src/controller.ts"></script>
+  </body>
+</html>

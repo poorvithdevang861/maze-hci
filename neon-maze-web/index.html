@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Guide a neon robot through the maze using hand gestures from your webcam." />
+    <meta name="theme-color" content="#090814" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Neon Maze" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>Neon Maze - Gesture Controlled</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <h1>NEON MAZE</h1>
+          <p>Guide the robot to the portal with hand gestures</p>
+        </div>
+        <div class="header-actions">
+          <span id="phone-chip" class="chip phone-chip" hidden>PHONE CONNECTED</span>
+          <span id="stage-chip" class="chip">STAGE 1 · CYAN</span>
+          <button id="phone-btn" class="btn ghost small">Phone controller</button>
+          <button id="install-btn" class="btn ghost small" hidden>Install app</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="maze-frame">
+          <canvas id="maze" aria-label="Maze game board"></canvas>
+
+          <div id="win-card" class="win-card" aria-live="polite">
+            <h2>MAZE CLEARED!</h2>
+            <p id="win-points" class="win-points">+0 POINTS</p>
+            <p id="win-info" class="win-info"></p>
+            <p id="win-next" class="win-next"></p>
+          </div>
+
+          <div id="start-screen" class="start-screen">
+            <div class="start-card">
+              <h2>Ready to play?</h2>
+              <p>Pinch your thumb and index finger, then point your hand to steer the robot. No camera? Swipe the maze or use the arrow pad.</p>
+              <div class="start-actions">
+                <button id="start-btn" class="btn primary">Start with camera</button>
+                <button id="keyboard-btn" class="btn ghost">Play without camera</button>
+              </div>
+              <p id="start-status" class="status" role="status"></p>
+              <p class="privacy">Your video stays on this device. Nothing is uploaded.</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="card camera-card">
+            <video id="video" playsinline muted></video>
+            <canvas id="hand-canvas"></canvas>
+            <div id="camera-off" class="camera-off">
+              <strong>Camera off</strong>
+              <span>Press "Start with camera" to enable gestures</span>
+            </div>
+            <div class="live-badge"><span class="dot"></span>LIVE</div>
+            <select id="camera-select" class="camera-select" aria-label="Camera" hidden></select>
+          </div>
+
+          <div class="card stats">
+            <div class="stat"><span class="label">SCORE</span><span id="stat-score" class="value gold">0</span></div>
+            <div class="stat"><span class="label">TIME</span><span id="stat-time" class="value">0.0s</span></div>
+            <div class="stat"><span class="label">BEST</span><span id="stat-best" class="value mint">--</span></div>
+            <div class="stat"><span class="label">CLEARED</span><span id="stat-cleared" class="value goal">0</span></div>
+          </div>
+
+          <div class="card controls">
+            <div class="card-title">CONTROLS</div>
+            <div class="controls-body">
+              <div class="dpad">
+                <button class="pad up" data-dir="UP" aria-label="Move up"><svg viewBox="0 0 24 24"><path d="M12 6l7 9H5z" /></svg></button>
+                <button class="pad left" data-dir="LEFT" aria-label="Move left"><svg viewBox="0 0 24 24"><path d="M6 12l9-7v14z" /></svg></button>
+                <div id="hand-dot" class="hand-dot" data-state="NO HAND"></div>
+                <button class="pad right" data-dir="RIGHT" aria-label="Move right"><svg viewBox="0 0 24 24"><path d="M18 12l-9 7V5z" /></svg></button>
+                <button class="pad down" data-dir="DOWN" aria-label="Move down"><svg viewBox="0 0 24 24"><path d="M12 18l-7-9h14z" /></svg></button>
+              </div>
+              <div class="hand-info">
+                <span class="label">HAND</span>
+                <span id="hand-state" class="hand-state">NO HAND</span>
+                <span class="label">PINCH STRENGTH</span>
+                <div class="meter"><div id="meter-fill" class="meter-fill"></div></div>
+                <ul class="hints">
+                  <li>Pinch + point to move</li>
+                  <li>Open hand to stop</li>
+                  <li>Or swipe the maze / use the pad</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div id="phone-modal" class="modal" hidden>
+      <div class="modal-card" role="dialog" aria-labelledby="phone-title">
+        <button id="phone-close" class="modal-close" aria-label="Close">&times;</button>
+        <h2 id="phone-title">Use your phone as a controller</h2>
+        <p class="modal-sub">Scan with your phone's camera to open the controller.</p>
+        <canvas id="qr" class="qr"></canvas>
+        <p class="room">Room code <strong id="room-code">-----</strong></p>
+        <p id="phone-status" class="phone-status">Opening room…</p>
+        <div class="modal-actions">
+          <button id="phone-disconnect" class="btn ghost small" hidden>Disconnect phone</button>
+          <button id="phone-done" class="btn primary small">Close</button>
+        </div>
+        <p id="phone-warning" class="phone-warning" hidden>
+          This page is open on <strong>localhost</strong>, which your phone can't reach. Open the game on the
+          laptop through its https link (for example the trycloudflare one), or open
+          <strong>/controller.html</strong> on that link from your phone and type the room code.
+        </p>
+        <p class="modal-foot">Pad, swipe, tilt or gesture controls. Phone and laptop connect directly.</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
